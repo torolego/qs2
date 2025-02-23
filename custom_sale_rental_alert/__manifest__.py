@@ -1,8 +1,8 @@
 {
     'name': 'Sale Rental Alert',
-    'version': '16.0.1.0.0',
+    'version': '17.0.1.0.0',
     'summary': 'Avviso di sovrapposizione prenotazioni noleggio',
-    'author': 'Maurizio Mattioli',
+    'author': 'QuickStart2',
     'category': 'Sales',
     'depends': ['sale', 'sale_renting'],
     'data': [
