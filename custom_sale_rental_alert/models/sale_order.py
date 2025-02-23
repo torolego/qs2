@@ -1,4 +1,4 @@
-from odoo import models, api, _, fields
+ugfrom odoo import models, api, _, fields
 from odoo.exceptions import UserError
 import logging
 
@@ -9,23 +9,23 @@ class SaleOrder(models.Model):
 
     def log_order_details(self, line):
         """Logga i dettagli del veicolo e del noleggio"""
-        _logger.info("Checking product Type: %s", line.product_id.detailed_type)
-        _logger.info(" Controllo overlapping per il veicolo:")
-        _logger.info("   - Ordine: %s (ID: %s)", line.order_id.name, line.order_id.id)
-        _logger.info("   - Prodotto: %s (ID: %s)", line.product_id.display_name, line.product_id.id)
-        _logger.info("   - Data inizio: %s", line.start_date)
-        _logger.info("   - Data fine: %s", line.return_date)
-        _logger.info("   - Stato ordine: %s", line.order_id.state)
+        _logger.debug("Checking product Type: %s", line.product_id.detailed_type)
+        _logger.debug(" Controllo overlapping per il veicolo:")
+        _logger.debug("   - Ordine: %s (ID: %s)", line.order_id.name, line.order_id.id)
+        _logger.debug("   - Prodotto: %s (ID: %s)", line.product_id.display_name, line.product_id.id)
+        _logger.debug("   - Data inizio: %s", line.start_date)
+        _logger.debug("   - Data fine: %s", line.return_date)
+        _logger.debug("   - Stato ordine: %s", line.order_id.state)
 
     def check_vehicle_availability(self):
         """Verifica la disponibilità del veicolo nell'ordine"""
         for order in self:
-            _logger.info("Verifica disponibilità veicolo per ordine: %s", order.name)
+            _logger.debug("Verifica disponibilità veicolo per ordine: %s", order.name)
             for line in order.order_line:
                 self.log_order_details(line)
                 
                 if line.product_id.detailed_type == 'product':  # Consideriamo solo i veicoli
-                    _logger.info(" Il prodotto è un veicolo (prodotto)")
+                    _logger.debug(" Il prodotto è un veicolo (prodotto)")
 
                     overlapping_orders = self.env['sale.order.line'].search([
                         ('product_id', '=', line.product_id.id),
@@ -48,7 +48,7 @@ class SaleOrder(models.Model):
 
     def write(self, vals):
         """Verifica la disponibilità veicolo alla modifica"""
-        _logger.info("Verifica la disponibilità veicolo alla modifica")
+        _logger.debug("Verifica la disponibilità veicolo alla modifica")
         
         if 'order_line' in vals:
             for order in self:
@@ -57,10 +57,10 @@ class SaleOrder(models.Model):
                     start_date = vals.get('start_date', line.start_date)
                     return_date = vals.get('return_date', line.return_date)
 
-                    _logger.info(" - Ordine: %s (ID: %s)", order.name, order.id)
-                    _logger.info("   - Prodotto: %s (ID: %s)", line.product_id.display_name, new_product_id)
-                    _logger.info("   - Nuova data inizio: %s", start_date)
-                    _logger.info("   - Nuova data fine: %s", return_date)
+                    _logger.debug(" - Ordine: %s (ID: %s)", order.name, order.id)
+                    _logger.debug("   - Prodotto: %s (ID: %s)", line.product_id.display_name, new_product_id)
+                    _logger.debug("   - Nuova data inizio: %s", start_date)
+                    _logger.debug("   - Nuova data fine: %s", return_date)
                     
                     if (line.product_id.id != new_product_id) or ('start_date' in vals or 'return_date' in vals):
                         order.check_vehicle_availability()
@@ -71,7 +71,7 @@ class SaleOrder(models.Model):
     @api.model
     def create(self, vals):
         """Verifica la disponibilità veicolo alla creazione"""
-        _logger.info("Verifica la disponibilità veicolo alla creazione")
+        _logger.debug("Verifica la disponibilità veicolo alla creazione")
         order = super(SaleOrder, self).create(vals)
         order.check_vehicle_availability()
         return order
